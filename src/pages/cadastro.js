@@ -1,4 +1,4 @@
-import { Label, TextInput, Checkbox, Button, Card } from "flowbite-react";
+import { Label, TextInput, Checkbox, Button, Card, Alert } from "flowbite-react";
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useState } from "react";
@@ -14,6 +14,12 @@ const Cadastro = (props) => {
       </Head>
       <main className={styles.main}>
         <Card className="container mx-auto">
+          <Alert color="failure" withBorderAccent={true}> 
+            <span>
+              <span className="font-medium">Atenção! </span> 
+              E-mail já cadastrado.
+            </span>
+          </Alert>
           <form className="flex flex-col gap-4">
             <div>
               <div className="mb-2 block">
@@ -37,13 +43,6 @@ const Cadastro = (props) => {
                 placeholder="name@gmail.com"
                 required={true}
                 shadow={true}
-                color="failure"
-                helperText={
-                  <React.Fragment>
-                    <span className="font-medium">Oops! </span>
-                    E-mail já cadastrado!
-                  </React.Fragment>
-                }
               />
             </div>
             <div>
