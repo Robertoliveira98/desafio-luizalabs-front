@@ -1,4 +1,4 @@
-import { Label, TextInput, Checkbox, Button, Alert } from "flowbite-react";
+import { Label, TextInput, Checkbox, Button, Alert, Spinner } from "flowbite-react";
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useState } from "react";
@@ -11,17 +11,20 @@ const Login = (props) => {
   let [senha, setSenha] = useState();
   let [mensagemErro, setMensagemErro] = useState("Ocorreu um erro!");
   let [erro, setErro] = useState(false);
+  let [carregando, setCarregando] = useState(false);
   let router = useRouter(); 
 
   const login = (event) => {
+    setCarregando(true);
     apiClient
       .post(`/usuario/login`, { senha, email })
       .then((response) => {
-        alert(response.data.token)
-        // sessionStorage.setItem("token", response.data.token)
+        setCarregando(false);
+        // localStorage.setItem("token", response.data.token)
         router.push("/home/" + response.data.token);
       })
       .catch((error) => {
+        setCarregando(false);
         setMensagemErro(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
         setErro(true);
       });
@@ -29,7 +32,9 @@ const Login = (props) => {
     event.preventDefault();
   };
 
-  const criarConta = (event) => {};
+  const criarConta = (event) => {
+    router.push("/cadastro/");
+  };
 
   const restaurarSenha = (event) => {};
 
@@ -65,10 +70,10 @@ const Login = (props) => {
               <div className="mb-2 block">
                 <Label htmlFor="password1" value="Senha" />
               </div>
-              <TextInput 
-                id="password1" 
-                type="password" 
-                required={true} 
+              <TextInput
+                id="password1"
+                type="password"
+                required={true}
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
               />
@@ -77,13 +82,13 @@ const Login = (props) => {
               <Checkbox id="remember" />
               <Label htmlFor="remember">Lembre-me</Label>
             </div>
-            {erro ? 
-            <Alert className="mt-2" color="failure">
-              <span>
-                <span className="font-medium">{mensagemErro}</span>
-              </span> 
-            </Alert> : undefined
-            }
+            {erro ? (
+              <Alert className="mt-2" color="failure">
+                <span>
+                  <span className="font-medium">{mensagemErro}</span>
+                </span>
+              </Alert>
+            ) : undefined}
             <Button
               className="mt-1"
               size="lg"
@@ -92,28 +97,33 @@ const Login = (props) => {
               onClick={(e) => login(e)}
               type="submit"
             >
+              {carregando ? (
+                <div className="pr-3">
+                  <Spinner />
+                </div>
+              ) : undefined}
               Enviar
             </Button>
           </form>
           <div className="grid gap-2 grid-cols-2 justify-items-center">
             <div>
               <Button
-              gradientMonochrome="failure"
-              type="button"
-              outline={true}
-              pill={true} 
-              onClick={(e) => restaurarSenha(e)}
+                gradientMonochrome="failure"
+                type="button"
+                outline={true}
+                pill={true}
+                onClick={(e) => restaurarSenha(e)}
               >
                 Esqueceu a senha?
               </Button>
             </div>
             <div>
               <Button
-              gradientMonochrome="cyan"
-              type="button"
-              outline={true}
-              pill={true} 
-              onClick={(e) => criarConta(e)}
+                gradientMonochrome="cyan"
+                type="button"
+                outline={true}
+                pill={true}
+                onClick={(e) => criarConta(e)}
               >
                 Criar nova conta
               </Button>
