@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Card from "@/components/Card";
 import { useRouter } from "next/router";
 import apiClient from "services/api";
+import Divider from "@/components/Divider";
 
 const Login = (props) => {
   let [email, setEmail] = useState();
@@ -130,6 +131,7 @@ const Login = (props) => {
               Enviar
             </Button>
           </form>
+          <Divider />
           <div className="grid gap-2 grid-cols-2 justify-items-center">
             <div>
               <Button

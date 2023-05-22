@@ -47,6 +47,9 @@ const Cadastro = (props) => {
       </Head>
       <main className={styles.main}>
         <Card>
+          <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
+            Cadastre-se
+          </h5>
           <form className="flex flex-col gap-4">
             <div>
               <div className="mb-2 block">
