@@ -29,13 +29,9 @@ const Login = (props) => {
     event.preventDefault();
   };
 
-  const criarConta = (event) => {
-    event.preventDefault();
-  };
+  const criarConta = (event) => {};
 
-  const restaurarSenha = (event) => {
-    event.preventDefault();
-  };
+  const restaurarSenha = (event) => {};
 
 
   return (
