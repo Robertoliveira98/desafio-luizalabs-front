@@ -9,9 +9,10 @@ import apiClient from "services/api";
 const Login = (props) => {
   let [email, setEmail] = useState();
   let [senha, setSenha] = useState();
-  let [mensagemErro, setMensagemErro] = useState("Ocorreu um erro!");
-  let [erro, setErro] = useState(false);
+  let [mensagemAlerta, setMensagemAlerta] = useState("Ocorreu um erro!");
+  let [alerta, setAlerta] = useState(false);
   let [carregando, setCarregando] = useState(false);
+  let [tipoAlerta, setTipoAlerta] = useState("failure");
   let router = useRouter(); 
 
   const login = (event) => {
@@ -25,8 +26,9 @@ const Login = (props) => {
       })
       .catch((error) => {
         setCarregando(false);
-        setMensagemErro(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
-        setErro(true);
+        setMensagemAlerta(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
+        setAlerta(true);
+        setTipoAlerta("failure");
       });
       
     event.preventDefault();
@@ -36,7 +38,29 @@ const Login = (props) => {
     router.push("/cadastro/");
   };
 
-  const restaurarSenha = (event) => {};
+  const restaurarSenha = (event) => {
+    if (email) {
+      setCarregando(true);
+      apiClient
+        .post(`/usuario/recuperar`, { email })
+        .then((response) => {
+          setCarregando(false);
+          setMensagemAlerta("Sucesso!! Verifique seu e-mail para redefinir sua senha.");
+          setAlerta(true);
+          setTipoAlerta("success");
+        })
+        .catch((error) => {
+          setCarregando(false);
+          setMensagemAlerta(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
+          setAlerta(true);
+          setTipoAlerta("failure");
+        });
+    } else {
+      setMensagemAlerta("Preencha o campo de e-mail para continuar.");
+      setAlerta(true);
+      setTipoAlerta("warning");
+    }
+  };
 
 
   return (
@@ -82,10 +106,10 @@ const Login = (props) => {
               <Checkbox id="remember" />
               <Label htmlFor="remember">Lembre-me</Label>
             </div>
-            {erro ? (
-              <Alert className="mt-2" color="failure">
+            {alerta ? (
+              <Alert className="mt-2" color={tipoAlerta}>
                 <span>
-                  <span className="font-medium">{mensagemErro}</span>
+                  <span className="font-medium">{mensagemAlerta}</span>
                 </span>
               </Alert>
             ) : undefined}
@@ -95,6 +119,7 @@ const Login = (props) => {
               gradientMonochrome="info"
               pill={true}
               onClick={(e) => login(e)}
+              disabled={carregando}
               type="submit"
             >
               {carregando ? (
@@ -112,6 +137,7 @@ const Login = (props) => {
                 type="button"
                 outline={true}
                 pill={true}
+                disabled={carregando}
                 onClick={(e) => restaurarSenha(e)}
               >
                 Esqueceu a senha?
@@ -123,6 +149,7 @@ const Login = (props) => {
                 type="button"
                 outline={true}
                 pill={true}
+                disabled={carregando}
                 onClick={(e) => criarConta(e)}
               >
                 Criar nova conta
