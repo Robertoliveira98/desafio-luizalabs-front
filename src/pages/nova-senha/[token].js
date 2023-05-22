@@ -1,9 +1,12 @@
-import { Label, TextInput, Checkbox, Button, Card } from "flowbite-react";
+import { Label, TextInput, Button } from "flowbite-react";
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useState } from "react";
+import jwt from "jsonwebtoken";
+import Card from "@/components/Card";
 
 const NovaSenha = (props) => {
+  let [nome, setNome] = useState(props.nome ? props.nome.split(" ")[0] : "");
   return (
     <>
       <Head>
@@ -14,6 +17,9 @@ const NovaSenha = (props) => {
       </Head>
       <main className={styles.main}>
         <Card className="container mx-auto">
+          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Atualize sua senha, {nome}
+          </h5>
           <form className="flex flex-col gap-4">
             <div>
               <div className="mb-2 block">
@@ -37,7 +43,11 @@ const NovaSenha = (props) => {
                 shadow={true}
               />
             </div>
-            <Button type="submit">Atualizar senha</Button>
+            <Button size="lg"
+              gradientMonochrome="info"
+              pill={true}
+              type="submit"
+            >Atualizar senha</Button>
           </form>
         </Card>
       </main>
@@ -46,3 +56,13 @@ const NovaSenha = (props) => {
 };
 
 export default NovaSenha;
+
+export async function getServerSideProps(context) {
+  const { token } = context.query;
+  const tokenData = jwt.decode(token);
+  let nomeUsuario = "";
+  if (tokenData) {
+    nomeUsuario = tokenData.nome;
+  }
+  return { props: { nome: nomeUsuario } };
+}
