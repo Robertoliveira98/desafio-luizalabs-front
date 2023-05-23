@@ -6,6 +6,7 @@ import apiClient from "../../services/api";
 import { useRouter } from "next/router";
 import Card from "@/components/Card";
 import Divider from "@/components/Divider";
+import { validaEmail, validaSenha, validaNome } from "services/utils";
 
 const Cadastro = (props) => {
   let [nome, setNome] = useState();
@@ -19,20 +20,35 @@ const Cadastro = (props) => {
 
   const enviaCadastro = (event) => {
     setCarregando(true);
+    if (validaEmail(email) && validaNome(nome) && senha == confirmaSenha && validaSenha(senha)) {
+      apiClient
+        .post(`/usuario/cadastro`, { nome, senha, email })
+        .then((response) => {
+          setCarregando(false);
+          // sessionStorage.setItem("token", response.data.token)
+          debugger;
+          router.push("/home/" + response.data.token);
+        })
+        .catch((error) => {
+          setErro(true);
+          setCarregando(false);
+          setMensagemErro(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
+        });
+    } else {
+      let mensagem = "Dados inválidos";
+      if (!validaNome(nome)) {
+        mensagem = "Nome inválido";
+      } else if (!validaEmail(email)) {
+        mensagem = "E-mail inválido";
+      } else if (!(senha == confirmaSenha && validaSenha(senha))) {
+        mensagem = "Senha inválida";
+      }
 
-    apiClient
-      .post(`/usuario/cadastro`, { nome, senha, email })
-      .then((response) => {
-        setCarregando(false);
-        // sessionStorage.setItem("token", response.data.token)
-        debugger;
-        router.push("/home/" + response.data.token);
-      })
-      .catch((error) => {
-        setErro(true);
-        setCarregando(false);
-        setMensagemErro(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
-      });
+      setMensagemErro(mensagem);
+      setErro(true);
+      setCarregando(false);
+    }
+
     event.preventDefault();
   };
 
@@ -119,6 +135,7 @@ const Cadastro = (props) => {
               pill={true} 
               onClick={(e) => enviaCadastro(e)} 
               type="submit"
+              disabled={carregando}
               >
               {carregando ? <div className="pr-3"><Spinner/></div> : null}
               Cadastrar conta

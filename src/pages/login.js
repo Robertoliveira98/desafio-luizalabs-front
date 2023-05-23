@@ -6,6 +6,7 @@ import Card from "@/components/Card";
 import { useRouter } from "next/router";
 import apiClient from "services/api";
 import Divider from "@/components/Divider";
+import { validaEmail, validaSenha } from "services/utils";
 
 const Login = (props) => {
   let [email, setEmail] = useState();
@@ -18,20 +19,31 @@ const Login = (props) => {
 
   const login = (event) => {
     setCarregando(true);
-    apiClient
-      .post(`/usuario/login`, { senha, email })
-      .then((response) => {
-        setCarregando(false);
-        // localStorage.setItem("token", response.data.token)
-        router.push("/home/" + response.data.token);
-      })
-      .catch((error) => {
-        setCarregando(false);
-        setMensagemAlerta(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
-        setAlerta(true);
-        setTipoAlerta("failure");
-      });
-      
+    if (!(validaEmail(email) && validaSenha(senha))) {
+
+      setMensagemAlerta(validaEmail(email) ? "Senha inválida" : "E-mail inválido");
+      setAlerta(true);
+      setTipoAlerta("failure");
+      setCarregando(false);
+
+    } else {
+
+      apiClient
+        .post(`/usuario/login`, { senha, email })
+        .then((response) => {
+          setCarregando(false);
+          // localStorage.setItem("token", response.data.token)
+          router.push("/home/" + response.data.token);
+        })
+        .catch((error) => {
+          setCarregando(false);
+          setMensagemAlerta(error.response.data.mensagem ? error.response.data.mensagem : "Ocorreu um erro");
+          setAlerta(true);
+          setTipoAlerta("failure");
+        });
+        
+    }
+
     event.preventDefault();
   };
 
