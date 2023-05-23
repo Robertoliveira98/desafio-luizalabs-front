@@ -1,15 +1,29 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "@/components/Card";
 import jwt from "jsonwebtoken";
 import { Button } from "flowbite-react";
 import Divider from "@/components/Divider";
+import { useRouter } from "next/router";
 
 const HomePage = (props) => {
-    let [nome, setNome] = useState(props.nome ? props.nome : "");
-    const logout = (event) => {
-    };
+  let router = useRouter();
+  let [nome, setNome] = useState(props.nome ? props.nome : "");
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const tokenData = jwt.decode(token);
+      let nomeUsuario = tokenData && tokenData.nome ? tokenData.nome : "";
+      setNome(nomeUsuario);
+    } else {
+      router.push("/login/");
+    }
+  }, []);
+  const logout = (event) => {
+    localStorage.removeItem('token');
+    router.push("/login/");
+  };
   return (
     <>
       <Head>
@@ -26,13 +40,13 @@ const HomePage = (props) => {
           <p className="font-normal text-gray-700 dark:text-gray-400">
             Seja bem vindo!
           </p>
-          <Divider/>
+          <Divider />
           <Button
             gradientMonochrome="failure"
             type="button"
-            pill={true} 
+            pill={true}
             onClick={(e) => logout(e)}
-            >
+          >
             Sair
           </Button>
         </Card>
@@ -43,12 +57,13 @@ const HomePage = (props) => {
 
 export default HomePage;
 
-export async function getServerSideProps(context) {
-  const { token } = context.query;
-  const tokenData = jwt.decode(token);
-  let nomeUsuario = "";
-  if (tokenData) {
-    nomeUsuario = tokenData.nome;
-  }
-  return { props: { nome: nomeUsuario } };
-}
+// export async function getStaticProps(context) {
+//   debugger;
+//   const token = localStorage.getItem('token');
+//   const tokenData = jwt.decode(token);
+//   let nomeUsuario = "";
+//   if (tokenData) {
+//     nomeUsuario = tokenData.nome;
+//   }
+//   return { props: { nome: nomeUsuario } };
+// }

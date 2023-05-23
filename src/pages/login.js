@@ -32,8 +32,8 @@ const Login = (props) => {
         .post(`/usuario/login`, { senha, email })
         .then((response) => {
           setCarregando(false);
-          // localStorage.setItem("token", response.data.token)
-          router.push("/home/" + response.data.token);
+          localStorage.setItem("token", response.data.token)
+          router.push("/home/");
         })
         .catch((error) => {
           setCarregando(false);
@@ -94,10 +94,6 @@ const Login = (props) => {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
               />
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember">Lembre-me</Label>
             </div>
             {alerta ? (
               <Alert className="mt-2" color={tipoAlerta}>

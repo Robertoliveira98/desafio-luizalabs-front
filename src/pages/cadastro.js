@@ -25,9 +25,8 @@ const Cadastro = (props) => {
         .post(`/usuario/cadastro`, { nome, senha, email })
         .then((response) => {
           setCarregando(false);
-          // sessionStorage.setItem("token", response.data.token)
-          debugger;
-          router.push("/home/" + response.data.token);
+          localStorage.setItem("token", response.data.token)
+          router.push("/home/");
         })
         .catch((error) => {
           setErro(true);
