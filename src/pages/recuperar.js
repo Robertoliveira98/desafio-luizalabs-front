@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import Card from "@/components/Card";
 import { useRouter } from "next/router";
 import apiClient from "services/api";
-import Divider from "@/components/Divider";
 import { validaEmail } from "services/utils";
 
 const Recuperar = (props) => {
@@ -40,6 +39,8 @@ const Recuperar = (props) => {
       setAlerta(true);
       setTipoAlerta("warning");
     }
+
+    event.preventDefault();
   };
 
   const seguirLogin = (event) => {
@@ -104,7 +105,6 @@ const Recuperar = (props) => {
                 pill={true}
                 onClick={(e) => seguirLogin(e)}
                 disabled={carregando}
-                type="submit"
               >
                 {carregando ? (
                   <div className="pr-3">
