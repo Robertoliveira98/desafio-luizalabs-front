@@ -56,14 +56,3 @@ const HomePage = (props) => {
 };
 
 export default HomePage;
-
-// export async function getStaticProps(context) {
-//   debugger;
-//   const token = localStorage.getItem('token');
-//   const tokenData = jwt.decode(token);
-//   let nomeUsuario = "";
-//   if (tokenData) {
-//     nomeUsuario = tokenData.nome;
-//   }
-//   return { props: { nome: nomeUsuario } };
-// }
