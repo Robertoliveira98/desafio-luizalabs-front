@@ -40,8 +40,10 @@ const Cadastro = (props) => {
         mensagem = "Nome inválido";
       } else if (!validaEmail(email)) {
         mensagem = "E-mail inválido";
-      } else if (!(senha == confirmaSenha && validaSenha(senha))) {
+      } else if (!validaSenha(senha)) {
         mensagem = "Senha inválida";
+      } else if (senha != confirmaSenha) {
+        mensagem = "As senhas não correspondem";
       }
 
       setMensagemErro(mensagem);
