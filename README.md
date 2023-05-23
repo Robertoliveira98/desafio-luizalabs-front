@@ -1,3 +1,7 @@
+Next.js v13.1.6
+Flowbite v1.6.3
+React v18.2.0
+
 Next.js App para login e cadastro de usuários.
 
 # Instalação
