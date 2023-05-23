@@ -6,34 +6,28 @@ import Card from "@/components/Card";
 import { useRouter } from "next/router";
 import apiClient from "services/api";
 import Divider from "@/components/Divider";
-import { validaEmail, validaSenha } from "services/utils";
+import { validaEmail } from "services/utils";
 
-const Login = (props) => {
+const Recuperar = (props) => {
   let [email, setEmail] = useState();
-  let [senha, setSenha] = useState();
   let [mensagemAlerta, setMensagemAlerta] = useState("Ocorreu um erro!");
   let [alerta, setAlerta] = useState(false);
   let [carregando, setCarregando] = useState(false);
   let [tipoAlerta, setTipoAlerta] = useState("failure");
-  let router = useRouter(); 
+  let [enviado, setEnviado] = useState(false);
+  let router = useRouter();
 
-  const login = (event) => {
-    setCarregando(true);
-    if (!(validaEmail(email) && validaSenha(senha))) {
-
-      setMensagemAlerta(validaEmail(email) ? "Senha inválida" : "E-mail inválido");
-      setAlerta(true);
-      setTipoAlerta("failure");
-      setCarregando(false);
-
-    } else {
-
+  const restaurarSenha = (event) => {
+    if (email && validaEmail(email)) {
+      setCarregando(true);
       apiClient
-        .post(`/usuario/login`, { senha, email })
+        .post(`/usuario/recuperar`, { email })
         .then((response) => {
           setCarregando(false);
-          // localStorage.setItem("token", response.data.token)
-          router.push("/home/" + response.data.token);
+          setMensagemAlerta("Sucesso!! Verifique seu e-mail para redefinir sua senha.");
+          setAlerta(true);
+          setTipoAlerta("success");
+          setEnviado(true);
         })
         .catch((error) => {
           setCarregando(false);
@@ -41,25 +35,22 @@ const Login = (props) => {
           setAlerta(true);
           setTipoAlerta("failure");
         });
-        
+    } else {
+      setMensagemAlerta("Preencha o campo de e-mail corretamente para continuar.");
+      setAlerta(true);
+      setTipoAlerta("warning");
     }
-
-    event.preventDefault();
   };
 
-  const criarConta = (event) => {
-    router.push("/cadastro/");
-  };
-
-  const restaurarSenha = (event) => {
-    router.push("/recuperar/");
+  const seguirLogin = (event) => {
+    router.push("/login/");
   };
 
 
   return (
     <>
       <Head>
-        <title>Login</title>
+        <title>Recuperar senha</title>
         <meta name="description" content="Login" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -67,7 +58,7 @@ const Login = (props) => {
       <main className={styles.main}>
         <Card className="container mx-auto">
           <h5 className="text-2xl font-bold tracking-tight text-gray-700 dark:text-white">
-            Acessar conta
+            Recuperação de senha
           </h5>
           <form className="flex flex-col gap-4">
             <div>
@@ -83,22 +74,6 @@ const Login = (props) => {
                 required={true}
               />
             </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="password1" value="Senha" />
-              </div>
-              <TextInput
-                id="password1"
-                type="password"
-                required={true}
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember">Lembre-me</Label>
-            </div>
             {alerta ? (
               <Alert className="mt-2" color={tipoAlerta}>
                 <span>
@@ -106,12 +81,12 @@ const Login = (props) => {
                 </span>
               </Alert>
             ) : undefined}
-            <Button
+            {!enviado ? <Button
               className="mt-1"
               size="lg"
               gradientMonochrome="info"
               pill={true}
-              onClick={(e) => login(e)}
+              onClick={(e) => restaurarSenha(e)}
               disabled={carregando}
               type="submit"
             >
@@ -122,38 +97,27 @@ const Login = (props) => {
               ) : undefined}
               Enviar
             </Button>
+              : <Button
+                className="mt-1"
+                size="lg"
+                gradientMonochrome="info"
+                pill={true}
+                onClick={(e) => seguirLogin(e)}
+                disabled={carregando}
+                type="submit"
+              >
+                {carregando ? (
+                  <div className="pr-3">
+                    <Spinner />
+                  </div>
+                ) : undefined}
+              Seguir para o login
+            </Button>}
           </form>
-          <Divider />
-          <div className="grid gap-2 grid-cols-2 justify-items-center">
-            <div>
-              <Button
-                gradientMonochrome="failure"
-                type="button"
-                outline={true}
-                pill={true}
-                disabled={carregando}
-                onClick={(e) => restaurarSenha(e)}
-              >
-                Esqueceu a senha?
-              </Button>
-            </div>
-            <div>
-              <Button
-                gradientMonochrome="cyan"
-                type="button"
-                outline={true}
-                pill={true}
-                disabled={carregando}
-                onClick={(e) => criarConta(e)}
-              >
-                Criar nova conta
-              </Button>
-            </div>
-          </div>
         </Card>
       </main>
     </>
   );
 };
 
-export default Login;
+export default Recuperar;
